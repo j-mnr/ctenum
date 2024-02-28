@@ -1,0 +1,27 @@
+{
+  "type": "Day",
+  "package": "main",
+  "output": "day_enumer.go",
+  "values": [
+    {
+      "name": "Monday",
+      "value": "M"
+    },
+    {
+      "name": "Tuesday",
+      "value": "Tu"
+    },
+    {
+      "name": "Wednesday",
+      "value": "W"
+    },
+    {
+      "name": "Thursday",
+      "value": "Th"
+    },
+    {
+      "name": "Friday",
+      "value": "F"
+    }
+  ]
+}

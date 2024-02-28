@@ -1,0 +1,12 @@
+type: Direction
+package: main
+output: direction_ctenum.go
+values:
+  - name: N
+    value: North
+  - name: S
+    value: South
+  - name: E
+    value: East
+  - name: W
+    value: West

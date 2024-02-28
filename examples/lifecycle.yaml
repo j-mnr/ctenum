@@ -1,0 +1,16 @@
+type: Lifecycle
+package: main
+output: lifecycle_ctenum.go
+values:
+  - name: SandBox
+    value: sb
+    comment: Used for testing and development in an isolated environment.
+  - name: NonProd
+    value: np
+    comment: Non-production environment for pre-production testing and validation.
+  - name: ReleaseCandidate
+    value: rc
+    comment: A candidate for release, typically the last testing stage before production.
+  - name: Production
+    value: pr
+    comment: The live and operational environment where the application is accessible to users.

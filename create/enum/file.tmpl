@@ -1,0 +1,109 @@
+{{- $typ := .Type -}}
+{{ GeneratedCodeComment }}
+
+package {{ .Package }}
+
+import (
+	"encoding"
+	"errors"
+	"fmt"
+	"strconv"
+	"strings"
+)
+
+{{/* Declare Error */ -}}
+// Invalid{{ $typ }}Error is returned by [To{{ $typ }}] if the passed in
+// string isn't one of the enum values.
+type Invalid{{ $typ }}Error struct {
+	s string
+}
+
+// Error exposes the invalid string used and shows all the possible values.
+func (e Invalid{{ $typ }}Error) Error() string {
+	return strconv.Quote(e.s) + " does not belong to {{ $typ }} enum; " +
+		"valid values are: " + strings.Join({{ $typ }}Strings(), " ")
+}
+
+// Is tells you if target can be unwrapped to be an Invalid{{ $typ }}Error.
+func (e Invalid{{ $typ }}Error) Is(err error) bool {
+	return errors.As(err, &e)
+}
+
+{{/* Declare Enum */ -}}
+// {{ $typ }} is a true enum, i.e. using this as a parameter in a function
+// declaration requires the use of one of the constants defined in this package.
+type {{ $typ }} interface {
+	is{{ $typ }}()
+	fmt.Stringer
+	encoding.TextMarshaler
+}
+
+type {{ PrivateEnum $typ }} string
+
+// is{{ $typ }} implements {{ $typ }} to make it a part of the compile-time
+// safe enum.
+func ({{ PrivateEnum $typ }}) is{{ $typ }}() {}
+
+// String converts the private enum value to a primitive string.
+func (x {{ PrivateEnum $typ }}) String() string {
+	return string(x)
+}
+
+{{/* Declare Enum values */ -}}
+const (
+{{- range .Values }}
+	{{- $ename := (FormEnumName $typ .Name) }}
+	{{- FormComment $ename .Comment .Name }}
+	{{ $ename }} {{ PrivateEnum $typ }} = {{ DefaultValue . }}
+{{- end }}
+)
+
+{{/* Declare private mapping for conversion */ -}}
+var {{ PrivateEnum $typ }}Mapping = map[string]{{ PrivateEnum $typ }}{
+{{ FormatMapValues . }}
+}
+
+// To{{ $typ }} retrieves an enum value from the constants defined in this
+// package. It tries it's best to find s in the enum by using the original-case,
+// uppercase and lowercase.
+func To{{ $typ }}(s string) ({{ $typ }}, error) {
+	if val, ok := {{ PrivateEnum $typ }}Mapping[s]; ok {
+		return val, nil
+	}
+	if val, ok := {{ PrivateEnum $typ }}Mapping[strings.ToLower(s)]; ok {
+		return val, nil
+	}
+	if val, ok := {{ PrivateEnum $typ }}Mapping[strings.ToUpper(s)]; ok {
+		return val, nil
+	}
+	return nil, Invalid{{ $typ }}Error{s: s}
+}
+
+{{/* Slices for Enum values and primitives */ -}}
+// {{ $typ }}Values returns a slice of values of the {{ $typ }} enum.
+// Each enum value matches the index of [{{ $typ }}Strings].
+func {{ $typ }}Values() []{{ $typ }} {
+	return []{{ $typ }}{
+	{{- range .Values }}
+		{{ FormEnumName $typ .Name }},
+	{{- end }}
+	}
+}
+
+// {{ $typ }}Strings returns a slice of all enum values as strings. This could
+// be useful for validation with something like [slices.Contains] or quickly
+// seeing all values of an enum.
+// Each string matches the index of [{{ $typ }}Values].
+func {{ $typ }}Strings() []string {
+	return []string{
+	{{- range .Values }}
+		{{ DefaultValue . }},
+	{{- end }}
+	}
+}
+
+{{/* Encoding Functions */ -}}
+// MarshalText implements the [encoding.TextMarshaler] for {{ $typ }}.
+func (x {{ PrivateEnum $typ }}) MarshalText() ([]byte, error) {
+	return []byte(x.String()), nil
+}

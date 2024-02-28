@@ -1,0 +1,20 @@
+type: Color
+package: color
+output: color_ctenum.go
+values:
+  - name: Red
+    comment: Represents the color of fire and blood, associated with energy and passion.
+  - name: Green
+    comment: Associated with nature, growth, and harmony.
+  - name: Blue
+    comment: Often linked to the sky and the sea, symbolizing calm and tranquility.
+  - name: Cyan
+    comment: A blend of blue and green, known for its soothing properties.
+  - name: Magenta
+    comment: A vibrant and intense color often associated with creativity.
+  - name: Yellow
+    comment: Represents sunshine and happiness, associated with positivity.
+  - name: White
+    comment: Symbolizes purity and cleanliness.
+  - name: Black
+    comment: Represents mystery, sophistication, and formality.

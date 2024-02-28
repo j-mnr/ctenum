@@ -1,0 +1,7 @@
+type: HttpMethod
+package: main
+values:
+  - name: GET
+  - name: POST
+  - name: PUT
+  - name: DELETE
