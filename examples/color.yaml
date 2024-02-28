@@ -1,5 +1,5 @@
 type: Color
-package: color
+package: examples
 output: color_ctenum.go
 values:
   - name: Red

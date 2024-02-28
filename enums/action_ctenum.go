@@ -47,9 +47,9 @@ func (x _ActionEnum) String() string {
 }
 
 const (
-	ActionEnumCreate _ActionEnum = "create"
+	ActionEnumCreate  _ActionEnum = "create"
 	ActionEnumVersion _ActionEnum = "version"
-	ActionEnumHelp _ActionEnum = "help"
+	ActionEnumHelp    _ActionEnum = "help"
 )
 
 var _ActionEnumMapping = map[string]_ActionEnum{

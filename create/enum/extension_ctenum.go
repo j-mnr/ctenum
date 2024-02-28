@@ -47,10 +47,10 @@ func (x _ExtensionEnum) String() string {
 }
 
 const (
-	ExtensionEnumYml _ExtensionEnum = ".yml"
+	ExtensionEnumYml  _ExtensionEnum = ".yml"
 	ExtensionEnumYAML _ExtensionEnum = ".yaml"
 	ExtensionEnumJSON _ExtensionEnum = ".json"
-	ExtensionEnumGo _ExtensionEnum = ".go"
+	ExtensionEnumGo   _ExtensionEnum = ".go"
 )
 
 var _ExtensionEnumMapping = map[string]_ExtensionEnum{

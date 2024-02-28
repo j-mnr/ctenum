@@ -47,11 +47,11 @@ func (x _DayEnum) String() string {
 }
 
 const (
-	DayEnumMonday _DayEnum = "M"
-	DayEnumTuesday _DayEnum = "Tu"
+	DayEnumMonday    _DayEnum = "M"
+	DayEnumTuesday   _DayEnum = "Tu"
 	DayEnumWednesday _DayEnum = "W"
-	DayEnumThursday _DayEnum = "Th"
-	DayEnumFriday _DayEnum = "F"
+	DayEnumThursday  _DayEnum = "Th"
+	DayEnumFriday    _DayEnum = "F"
 )
 
 var _DayEnumMapping = map[string]_DayEnum{

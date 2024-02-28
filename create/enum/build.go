@@ -1,12 +1,14 @@
 package enum
 
 import (
+	"bytes"
 	_ "embed"
 	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
 	"go/ast"
+	"go/format"
 	"go/parser"
 	"go/token"
 	"io"
@@ -56,9 +58,6 @@ type Enum struct {
 	Output  string
 	Type    string
 	Values  []ConstSpec
-
-	// longestVal is for formatting the mapping.
-	longestVal int
 }
 
 type ConstSpec struct {
@@ -128,7 +127,16 @@ func Build(version string, args []string, out, errW io.Writer) error {
 		}
 		out = f
 	}
-	if err := t.Execute(out, tmplEnum); err != nil {
+	var buf bytes.Buffer
+	if err := t.Execute(&buf, tmplEnum); err != nil {
+		return fmt.Errorf("create/enum: %w", err)
+	}
+
+	b, err := format.Source(buf.Bytes())
+	if err != nil {
+		return fmt.Errorf("create/enum: %w", err)
+	}
+	if _, err := out.Write(b); err != nil {
 		return fmt.Errorf("create/enum: %w", err)
 	}
 	return nil

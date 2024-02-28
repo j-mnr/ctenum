@@ -47,9 +47,9 @@ func (x _HTTPMethodEnum) String() string {
 }
 
 const (
-	HTTPMethodEnumGET _HTTPMethodEnum = "GET"
-	HTTPMethodEnumPOST _HTTPMethodEnum = "POST"
-	HTTPMethodEnumPUT _HTTPMethodEnum = "PUT"
+	HTTPMethodEnumGET    _HTTPMethodEnum = "GET"
+	HTTPMethodEnumPOST   _HTTPMethodEnum = "POST"
+	HTTPMethodEnumPUT    _HTTPMethodEnum = "PUT"
 	HTTPMethodEnumDELETE _HTTPMethodEnum = "DELETE"
 )
 
