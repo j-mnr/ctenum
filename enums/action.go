@@ -1,6 +1,6 @@
 package enums
 
-//go:generate ctenum create enum action.go
+//go:generate go run github.com/j-mnr/ctenum create enum action.go
 //ctenum:type=action package=enums make-file=true
 const (
 	create  = "create"

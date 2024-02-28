@@ -5,7 +5,7 @@ import (
 	"unicode"
 )
 
-//go:generate ctenum create enum initialism.go
+//go:generate go run github.com/j-mnr/ctenum create enum initialism.go
 //ctenum:package=enums make-file=true
 const (
 	acl   = "ACL"

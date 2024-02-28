@@ -25,7 +25,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-//go:generate ctenum create enum build.go
+//go:generate go run github.com/j-mnr/ctenum create enum build.go
 //ctenum:type=extension output=extension_ctenum.go
 const (
 	_yml  = ".yml"
@@ -34,7 +34,7 @@ const (
 	_go   = ".go"
 )
 
-//go:generate ctenum create enum build.go
+//go:generate go run github.com/j-mnr/ctenum create enum build.go
 //ctenum:type=flag output=flag_ctenum.go
 const (
 	// _type is the Go Type that will be used for the enum name.
