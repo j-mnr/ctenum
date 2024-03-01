@@ -104,3 +104,26 @@ func HTTPMethodEnumStrings() []string {
 func (x _HTTPMethodEnum) MarshalText() ([]byte, error) {
 	return []byte(x.String()), nil
 }
+
+type HTTPMethodEnumUnmarshaler string
+
+func (x HTTPMethodEnumUnmarshaler) Extract() HTTPMethodEnum {
+	if x == "" {
+		return nil
+	}
+	v, err := ToHTTPMethodEnum(string(x))
+	if err != nil {
+		panic(fmt.Sprintf("Incorrect usage of %T!"+
+			"Used for unmarshalling into the application", x))
+	}
+	return v
+}
+
+func (x *HTTPMethodEnumUnmarshaler) UnmarshalText(text []byte) error {
+	v, err := ToHTTPMethodEnum(string(text))
+	if err != nil {
+		return err
+	}
+	*x = HTTPMethodEnumUnmarshaler(any(v).(_HTTPMethodEnum))
+	return nil
+}

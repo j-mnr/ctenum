@@ -128,3 +128,26 @@ func ColorEnumStrings() []string {
 func (x _ColorEnum) MarshalText() ([]byte, error) {
 	return []byte(x.String()), nil
 }
+
+type ColorEnumUnmarshaler string
+
+func (x ColorEnumUnmarshaler) Extract() ColorEnum {
+	if x == "" {
+		return nil
+	}
+	v, err := ToColorEnum(string(x))
+	if err != nil {
+		panic(fmt.Sprintf("Incorrect usage of %T!"+
+			"Used for unmarshalling into the application", x))
+	}
+	return v
+}
+
+func (x *ColorEnumUnmarshaler) UnmarshalText(text []byte) error {
+	v, err := ToColorEnum(string(text))
+	if err != nil {
+		return err
+	}
+	*x = ColorEnumUnmarshaler(any(v).(_ColorEnum))
+	return nil
+}

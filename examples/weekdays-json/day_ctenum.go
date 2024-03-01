@@ -108,3 +108,26 @@ func DayEnumStrings() []string {
 func (x _DayEnum) MarshalText() ([]byte, error) {
 	return []byte(x.String()), nil
 }
+
+type DayEnumUnmarshaler string
+
+func (x DayEnumUnmarshaler) Extract() DayEnum {
+	if x == "" {
+		return nil
+	}
+	v, err := ToDayEnum(string(x))
+	if err != nil {
+		panic(fmt.Sprintf("Incorrect usage of %T!"+
+			"Used for unmarshalling into the application", x))
+	}
+	return v
+}
+
+func (x *DayEnumUnmarshaler) UnmarshalText(text []byte) error {
+	v, err := ToDayEnum(string(text))
+	if err != nil {
+		return err
+	}
+	*x = DayEnumUnmarshaler(any(v).(_DayEnum))
+	return nil
+}

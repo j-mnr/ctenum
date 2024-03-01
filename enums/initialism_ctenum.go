@@ -203,3 +203,26 @@ func InitialismEnumStrings() []string {
 func (x _InitialismEnum) MarshalText() ([]byte, error) {
 	return []byte(x.String()), nil
 }
+
+type InitialismEnumUnmarshaler string
+
+func (x InitialismEnumUnmarshaler) Extract() InitialismEnum {
+	if x == "" {
+		return nil
+	}
+	v, err := ToInitialismEnum(string(x))
+	if err != nil {
+		panic(fmt.Sprintf("Incorrect usage of %T!"+
+			"Used for unmarshalling into the application", x))
+	}
+	return v
+}
+
+func (x *InitialismEnumUnmarshaler) UnmarshalText(text []byte) error {
+	v, err := ToInitialismEnum(string(text))
+	if err != nil {
+		return err
+	}
+	*x = InitialismEnumUnmarshaler(any(v).(_InitialismEnum))
+	return nil
+}

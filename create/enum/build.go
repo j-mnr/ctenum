@@ -34,20 +34,6 @@ const (
 	_go   = ".go"
 )
 
-//go:generate go run github.com/j-mnr/ctenum create enum build.go
-//ctenum:type=flag output=flag_ctenum.go
-const (
-	// _type is the Go Type that will be used for the enum name.
-	_type = "type"
-	// output is the file relative to where ctenum was called.
-	output = "output"
-	// _package is the name of the package to put the enum into.
-	_package = "package"
-	// makeFile is a boolean that defaults to making a file named
-	// <type>_ctenumer.go in the current relative directory.
-	makeFile = "make-file"
-)
-
 var ErrTypeRequired = errors.New("a type name for the enum is required")
 
 //go:embed file.tmpl
@@ -222,67 +208,7 @@ func setup(fileName string) Enum {
 			panic(err)
 		}
 	case ExtensionEnumGo:
-		f, err := parser.ParseFile(token.NewFileSet(), fileName, nil, parser.ParseComments)
-		if err != nil {
-			panic(err)
-		}
-
-		constBlock := f.Decls[slices.IndexFunc(f.Decls, func(d ast.Decl) bool {
-			target, ok := d.(*ast.GenDecl)
-			return ok && target.Tok == token.CONST && target.Doc != nil &&
-				slices.ContainsFunc(target.Doc.List, func(c *ast.Comment) bool {
-					if c == nil {
-						return false
-					}
-					args, ok := strings.CutPrefix(c.Text, "//ctenum:")
-					for _, a := range strings.Fields(args) {
-						name, val, ok := strings.Cut(a, "=")
-						if !ok {
-							continue
-						}
-						flag, err := ToFlagEnum(name)
-						if err != nil {
-							continue
-						}
-						switch flag {
-						case FlagEnumType:
-							e.Type = val
-						case FlagEnumOutput:
-							e.Output = val
-						case FlagEnumPackage:
-							e.Package = val
-						case FlagEnumMakeFile:
-							e.Output = fileName[:strings.Index(fileName, filepath.Ext(fileName))] + "_ctenum.go"
-						}
-					}
-					return ok
-				})
-		})]
-
-		if e.Type == "" {
-			base := filepath.Base(fileName)
-			e.Type = base[:strings.Index(base, filepath.Ext(fileName))]
-		}
-		if e.Package == "" {
-			e.Package = f.Name.Name
-		}
-		for _, spec := range constBlock.(*ast.GenDecl).Specs {
-			v, ok := spec.(*ast.ValueSpec)
-			if !ok {
-				continue
-			}
-			e.Values = append(e.Values, ConstSpec{
-				Comment: strings.TrimSpace(v.Doc.Text()),
-				Name:    strings.TrimLeft(v.Names[0].Name, "_"),
-				Value: func() string {
-					s, err := strconv.Unquote(v.Values[0].(*ast.BasicLit).Value)
-					if err != nil {
-						panic(err)
-					}
-					return s
-				}(),
-			})
-		}
+		goUnmarshal(fileName, &e)
 	default:
 		panic("Unsupported file type: " + strconv.Quote(filepath.Ext(fileName)))
 	}
@@ -291,4 +217,68 @@ func setup(fileName string) Enum {
 		e.Values[i].Name = enums.FormatInitialism(v.Name)
 	}
 	return e
+}
+
+func goUnmarshal(fileName string, e *Enum) {
+	f, err := parser.ParseFile(token.NewFileSet(), fileName, nil, parser.ParseComments)
+	if err != nil {
+		panic(err)
+	}
+
+	constBlock := f.Decls[slices.IndexFunc(f.Decls, func(d ast.Decl) bool {
+		target, ok := d.(*ast.GenDecl)
+		return ok && target.Tok == token.CONST && target.Doc != nil &&
+			slices.ContainsFunc(target.Doc.List, func(c *ast.Comment) bool {
+				if c == nil {
+					return false
+				}
+				args, ok := strings.CutPrefix(c.Text, "//ctenum:")
+				for _, a := range strings.Fields(args) {
+					name, val, ok := strings.Cut(a, "=")
+					if !ok {
+						continue
+					}
+					flag, err := ToFlagEnum(name)
+					if err != nil {
+						continue
+					}
+					switch flag {
+					case FlagEnumType:
+						e.Type = val
+					case FlagEnumOutput:
+						e.Output = val
+					case FlagEnumPackage:
+						e.Package = val
+					case FlagEnumMakeFile:
+						e.Output = fileName[:strings.Index(fileName, filepath.Ext(fileName))] + "_ctenum.go"
+					}
+				}
+				return ok
+			})
+	})]
+
+	if e.Type == "" {
+		base := filepath.Base(fileName)
+		e.Type = base[:strings.Index(base, filepath.Ext(fileName))]
+	}
+	if e.Package == "" {
+		e.Package = f.Name.Name
+	}
+	for _, spec := range constBlock.(*ast.GenDecl).Specs {
+		v, ok := spec.(*ast.ValueSpec)
+		if !ok {
+			continue
+		}
+		e.Values = append(e.Values, ConstSpec{
+			Comment: strings.TrimSpace(v.Doc.Text()),
+			Name:    strings.TrimLeft(v.Names[0].Name, "_"),
+			Value: func() string {
+				s, err := strconv.Unquote(v.Values[0].(*ast.BasicLit).Value)
+				if err != nil {
+					panic(err)
+				}
+				return s
+			}(),
+		})
+	}
 }

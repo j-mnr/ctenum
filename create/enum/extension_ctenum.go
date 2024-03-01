@@ -104,3 +104,26 @@ func ExtensionEnumStrings() []string {
 func (x _ExtensionEnum) MarshalText() ([]byte, error) {
 	return []byte(x.String()), nil
 }
+
+type ExtensionEnumUnmarshaler string
+
+func (x ExtensionEnumUnmarshaler) Extract() ExtensionEnum {
+	if x == "" {
+		return nil
+	}
+	v, err := ToExtensionEnum(string(x))
+	if err != nil {
+		panic(fmt.Sprintf("Incorrect usage of %T!"+
+			"Used for unmarshalling into the application", x))
+	}
+	return v
+}
+
+func (x *ExtensionEnumUnmarshaler) UnmarshalText(text []byte) error {
+	v, err := ToExtensionEnum(string(text))
+	if err != nil {
+		return err
+	}
+	*x = ExtensionEnumUnmarshaler(any(v).(_ExtensionEnum))
+	return nil
+}

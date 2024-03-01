@@ -109,3 +109,26 @@ func FlagEnumStrings() []string {
 func (x _FlagEnum) MarshalText() ([]byte, error) {
 	return []byte(x.String()), nil
 }
+
+type FlagEnumUnmarshaler string
+
+func (x FlagEnumUnmarshaler) Extract() FlagEnum {
+	if x == "" {
+		return nil
+	}
+	v, err := ToFlagEnum(string(x))
+	if err != nil {
+		panic(fmt.Sprintf("Incorrect usage of %T!"+
+			"Used for unmarshalling into the application", x))
+	}
+	return v
+}
+
+func (x *FlagEnumUnmarshaler) UnmarshalText(text []byte) error {
+	v, err := ToFlagEnum(string(text))
+	if err != nil {
+		return err
+	}
+	*x = FlagEnumUnmarshaler(any(v).(_FlagEnum))
+	return nil
+}

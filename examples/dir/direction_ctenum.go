@@ -104,3 +104,26 @@ func DirectionEnumStrings() []string {
 func (x _DirectionEnum) MarshalText() ([]byte, error) {
 	return []byte(x.String()), nil
 }
+
+type DirectionEnumUnmarshaler string
+
+func (x DirectionEnumUnmarshaler) Extract() DirectionEnum {
+	if x == "" {
+		return nil
+	}
+	v, err := ToDirectionEnum(string(x))
+	if err != nil {
+		panic(fmt.Sprintf("Incorrect usage of %T!"+
+			"Used for unmarshalling into the application", x))
+	}
+	return v
+}
+
+func (x *DirectionEnumUnmarshaler) UnmarshalText(text []byte) error {
+	v, err := ToDirectionEnum(string(text))
+	if err != nil {
+		return err
+	}
+	*x = DirectionEnumUnmarshaler(any(v).(_DirectionEnum))
+	return nil
+}

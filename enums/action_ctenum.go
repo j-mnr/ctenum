@@ -100,3 +100,26 @@ func ActionEnumStrings() []string {
 func (x _ActionEnum) MarshalText() ([]byte, error) {
 	return []byte(x.String()), nil
 }
+
+type ActionEnumUnmarshaler string
+
+func (x ActionEnumUnmarshaler) Extract() ActionEnum {
+	if x == "" {
+		return nil
+	}
+	v, err := ToActionEnum(string(x))
+	if err != nil {
+		panic(fmt.Sprintf("Incorrect usage of %T!"+
+			"Used for unmarshalling into the application", x))
+	}
+	return v
+}
+
+func (x *ActionEnumUnmarshaler) UnmarshalText(text []byte) error {
+	v, err := ToActionEnum(string(text))
+	if err != nil {
+		return err
+	}
+	*x = ActionEnumUnmarshaler(any(v).(_ActionEnum))
+	return nil
+}

@@ -108,3 +108,26 @@ func LifecycleEnumStrings() []string {
 func (x _LifecycleEnum) MarshalText() ([]byte, error) {
 	return []byte(x.String()), nil
 }
+
+type LifecycleEnumUnmarshaler string
+
+func (x LifecycleEnumUnmarshaler) Extract() LifecycleEnum {
+	if x == "" {
+		return nil
+	}
+	v, err := ToLifecycleEnum(string(x))
+	if err != nil {
+		panic(fmt.Sprintf("Incorrect usage of %T!"+
+			"Used for unmarshalling into the application", x))
+	}
+	return v
+}
+
+func (x *LifecycleEnumUnmarshaler) UnmarshalText(text []byte) error {
+	v, err := ToLifecycleEnum(string(text))
+	if err != nil {
+		return err
+	}
+	*x = LifecycleEnumUnmarshaler(any(v).(_LifecycleEnum))
+	return nil
+}

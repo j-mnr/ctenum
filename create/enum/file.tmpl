@@ -107,3 +107,26 @@ func {{ $typ }}Strings() []string {
 func (x {{ PrivateEnum $typ }}) MarshalText() ([]byte, error) {
 	return []byte(x.String()), nil
 }
+
+type {{ $typ }}Unmarshaler string
+
+func (x {{ $typ }}Unmarshaler) Extract() {{ $typ }} {
+	if x == "" {
+		return nil
+	}
+	v, err := To{{ $typ }}(string(x))
+	if err != nil {
+		panic(fmt.Sprintf("Incorrect usage of %T!"+
+			"Used for unmarshalling into the application", x))
+	}
+	return v
+}
+
+func (x *{{ $typ }}Unmarshaler) UnmarshalText(text []byte) error {
+	v, err := To{{ $typ }}(string(text))
+	if err != nil {
+		return err
+	}
+	*x = {{ $typ }}Unmarshaler(any(v).({{ PrivateEnum $typ }}))
+	return nil
+}
